@@ -5,18 +5,16 @@ const tourRouter = require('./Routes/tourRoutes');
 const userRouter = require('./Routes/userRoutes');
 
 const app = express();
-const port = 3000;
 
 // 1. Middlewares
-
-app.use(morgan('dev'));
+console.log("teddy");
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
 
 app.use(express.json());
 
-app.use((req, res, next) => {
-  console.log('HI from the middleware 🕊');
-  next();
-});
+app.use(express.static(`${__dirname}/public`));
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
@@ -35,7 +33,4 @@ app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
 // 4. Start the Server
-
-app.listen(port, () => {
-  console.log(`App is running on ${port}`);
-});
+module.exports = app;
