@@ -6,7 +6,6 @@ const userRouter = require('./Routes/userRoutes');
 const app = express();
 
 // 1. Middlewares
-console.log('teddy');
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
