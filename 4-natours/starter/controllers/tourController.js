@@ -3,32 +3,26 @@ const Tour = require('../models/tourModel');
 exports.getAllTours = async (req, res) => {
   try {
     // BUILD A QUERY
-    // 1. Filtering
-    console.log(req.query);
+    console.log(req.query); // Log the incoming query for debugging
     const queryObj = { ...req.query };
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
     excludedFields.forEach((el) => delete queryObj[el]);
 
-    // 2. Advanced filtering
-
+    // Advanced filtering
     const queryStr = JSON.stringify(queryObj).replace(
       /\b(gte|gt|lte|lt)\b/g,
       (match) => `$${match}`,
     );
+    let query = Tour.find(JSON.parse(queryStr));
 
-    const query = await Tour.find(JSON.parse(queryStr));
-    console.log('new', JSON.parse(queryStr));
-
-    // EXECUTE A QUERY
+    // Sorting
+    if (req.query.sort) {
+      query = query.sort(req.query.sort);
+    }
+    // Execute Query
     const tours = await query;
 
-    // const query = await Tour.find()
-    //   .where('duration')
-    //   .equals(5)
-    //   .where('difficulty')
-    //   .equals('easy');
-
-    // SEND RESPONSE
+    // Send Response
     res.status(200).json({
       status: 'success',
       results: tours.length,
@@ -37,9 +31,10 @@ exports.getAllTours = async (req, res) => {
       },
     });
   } catch (err) {
+    console.error('Error:', err); // Log the actual error to the console
     res.status(400).json({
       status: 'Failed',
-      message: err,
+      message: err.message || 'Something went wrong',
     });
   }
 };
