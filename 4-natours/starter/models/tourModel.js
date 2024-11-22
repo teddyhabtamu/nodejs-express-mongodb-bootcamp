@@ -94,6 +94,14 @@ tourSchema.post(/^find/, function (docs, next) {
   next();
 });
 
+// AGGREGATION MIDDLEWARE
+tourSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+
+  console.log(this.pipeline());
+  next();
+});
+
 // virtual properties can't used on queries
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
